@@ -4,14 +4,22 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node build/app.js",
+    "build-next": "next build",
+    "build-ts": "tsc --project tsconfig.server.json",
+    "build": "npm run build-next && npm run build-ts",
+    "start": "node dist/src/server.js",
     "watch": "tsc --watch"
   },
   "devDependencies": {
+    "@types/node": "^22.13.11",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "next": "^15.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
