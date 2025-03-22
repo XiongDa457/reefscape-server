@@ -3,3 +3,5 @@ build/
 
 .next/
 next-env.d.ts
+
+code.txt

@@ -1,7 +1,10 @@
-import Link from "next/link";
+import QR from "../components/qr";
 
 export default function Home() {
+
   return (
-    <div/>
+    <div>
+      <QR/>
+    </div>
   );
 }
