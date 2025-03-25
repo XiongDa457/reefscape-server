@@ -8,7 +8,7 @@
     "build-next": "next build",
     "build-ts": "tsc --project tsconfig.server.json",
     "build": "npm run build-next && npm run build-ts",
-    "start": "node build/server.js",
+    "start": "node --env-file=.env build/server.js",
     "watch": "tsc --watch"
   },
   "devDependencies": {
@@ -25,6 +25,7 @@
     "next": "^15.2.3",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "socket.io": "^4.8.1"
   }
 }

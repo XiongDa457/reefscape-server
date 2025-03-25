@@ -12,10 +12,10 @@ export default function QR() {
     })
   })
 
-  if (QRData == "") return ( <div className="w-96 h-96 bg-white"/> )
+  if (QRData == "") return ( <div className="mt-20 w-96 h-96 bg-white"/> )
     else return (
       <QRCodeSVG
-        className="w-96 h-96"
+        className="mt-20 w-96 h-96"
         marginSize={1}
         value={QRData}
       />
