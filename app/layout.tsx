@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             <ul className="hidden flex-row items-center space-x-10 text-sm text-[#f1f7feb5] lg:flex">
               <li>
-                <Link href="/settings">Settings</Link>
+                <Link href="/scouters">Scouters</Link>
               </li>
               <li>
                 <Link href="/schedule">Schedule</Link>
