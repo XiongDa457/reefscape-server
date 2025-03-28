@@ -1,13 +1,16 @@
 export type MatchInfo = {
   label: string
-  times: {[key: string] : number}
+  times?: {[key: string] : number}
 
   redAlliance: (string | null)[]
-  redScouters: (string | null)[]
+  redScouters?: (string | null)[]
+  redScouted?: boolean[]
 
   blueAlliance: (string | null)[]
-  blueScouters: (string | null)[]
+  blueScouters?: (string | null)[]
+  blueScouted?: boolean[]
 }
+
 export enum ActionType {
   LEAVE,
   INTAKE_CORAL,

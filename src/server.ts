@@ -1,24 +1,28 @@
 import { createServer } from 'http'
 import { parse } from 'url'
 import next from 'next'
-import { addMatchDB, addScouterDB, fetchMatches, getIP, initDB } from './utils'
+import { addMatchData, addScheduleInfo, addScouter, fetchMatches, getIP, getScheduleFor, getScouters, initDB } from './utils'
 import { Server } from 'socket.io'
-import { MatchData, MatchInfo } from './types'
+import { MatchData } from './types'
 
 const team = "4308"
 const event = "demo6271"
 
-var scouters: string[] = []
-
-var matches: MatchInfo[] = []
-fetchMatches(event).then((res) => { matches = res })
-setInterval(() => {
-  fetchMatches(event).then((res) => { matches = res })
-}, 6e4)
-
-var scoutedMatches: MatchData[] = []
-
-initDB(event, (val) => {scouters = val}, (val) => {scoutedMatches = val})
+initDB(event) 
+function updateSchedule() {
+  fetchMatches().then((res) => {
+    for (const match of res) {
+      addScheduleInfo({
+        label: match.label,
+        times: match.times,
+        redAlliance: match.redTeams,
+        blueAlliance: match.blueTeams,
+      })
+    }
+  })
+}
+updateSchedule()
+setInterval(updateSchedule, 9e4)
 
 const port = 4308
 const server = createServer()
@@ -28,39 +32,43 @@ io.on("connection", (socket) => {
   let scouterName = ""
 
   socket.on("get names", () => {
-    socket.emit("names", scouters)
+    getScouters((val) => {
+      socket.emit("names", val)
+    })
   })
 
   socket.on("set name", (data) => { 
     scouterName = data
-    if (!scouters.includes(data)) {
-      scouters.push(data)
-      addScouterDB(data)
-    }
+    addScouter(data)
   })
+
+  socket.emit("get name")
 
   socket.on("get schedule", () => {
-    socket.emit("schedule", matches.filter((match) => {
-      return match.redScouters.includes(scouterName) || match.blueScouters.includes(scouterName)
-    }).map((val) => {
-        var scoutedTeam: string | null = ""
-        const red = val.redScouters.indexOf(scouterName)
-        if (red >= 0) scoutedTeam = val.redAlliance[red]
-        else scoutedTeam = val.blueAlliance[val.blueScouters.indexOf(scoutedTeam)]
+    getScheduleFor(scouterName, (val) => {
+      socket.emit("schedule", val.map((item) => {
+        const data = JSON.parse(item.data)
+
+        var ind = data.redScouters.indexOf(scouterName)
+        var red = true
+        if (ind == -1) {
+          ind = data.blueScouters.indexOf(scouterName)
+          red = false
+        }
 
         return {
-          label: val.label,
-          times: val.times,
-          redAlliance: val.redAlliance,
-          blueAlliance: val.blueAlliance,
-          scoutedTeam: (scoutedTeam as string)
+          label: data.label,
+          times: data.times,
+          redAlliance: data.redAlliance,
+          blueAlliance: data.blueAlliance,
+          scoutedTeam: (red ? data.redAlliance : data.blueAlliance)[ind],
+          scouted: (red ? data.redScouted : data.blueScouted)[ind],
         }
       }))
+    })
   })
 
-  socket.on("upload", (val: MatchData) => {
-    addMatchDB(event, val)
-  })
+  socket.on("upload", (val: MatchData) => addMatchData(val))
 })
 
 server.listen(port)
